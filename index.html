@@ -416,6 +416,7 @@
             font-weight: 600;
         }
 
+        /* --- 列舉倍數法 UI 樣式 --- */
         .listing-wrapper {
             display: flex;
             flex-direction: column;
@@ -493,6 +494,7 @@
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
         }
 
+        /* --- 藍色短除法直式樣式 --- */
         .sd-wrapper {
             display: flex;
             flex-direction: column;
@@ -569,6 +571,7 @@
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
         }
 
+        /* 通用答對綠色標記樣式 */
         .is-correct {
             border: 2px solid #16a34a !important;
             color: #16a34a !important;
@@ -1080,6 +1083,7 @@
         let currentQIndex = 0;
         let failCount = 0;
         let questionRecords = [];
+        const MAX_GRID_LIMIT = 8; // 格子上限改為 8 個
 
         const i18n = {
             zh: {
@@ -1316,7 +1320,9 @@
                     let listingMap = {};
                     nums.forEach(n => {
                         let mults = [];
-                        for (let i = 1; i <= 5; i++) {
+                        // 確保至少包含到最小公倍數（LCM / n）所需的個數，且上限為 MAX_GRID_LIMIT (8)
+                        let count = Math.min(MAX_GRID_LIMIT, Math.max(5, Math.ceil(targetLcm / n)));
+                        for (let i = 1; i <= count; i++) {
                             mults.push(n * i);
                         }
                         listingMap[n] = mults;
@@ -1337,26 +1343,27 @@
         }
 
         function generateSingleQuestionNumbers(topic, count) {
+            // 篩選確保所有數在 8 個倍數內均能找得到 LCM
             if (count === 2) {
                 if (topic === 'coprime') {
-                    let pool = [[3,5], [4,9], [5,7], [7,8], [8,9], [5,12], [7,9], [9,14], [4,15], [3,8], [5,8], [4,7]];
+                    let pool = [[2,3], [2,5], [2,7], [3,4], [3,5], [3,7], [3,8], [4,5], [4,7], [5,6], [5,7], [5,8], [6,7], [7,8]];
                     return pool[Math.floor(Math.random() * pool.length)];
                 } else if (topic === 'multiple') {
-                    let pool = [[14,28], [6,12], [8,24], [9,27], [12,36], [15,30], [7,21], [10,40], [16,32], [5,15], [4,12]];
+                    let pool = [[3,6], [4,8], [4,12], [5,10], [5,15], [6,12], [6,18], [7,14], [7,21], [8,16], [8,24], [9,18], [9,27], [10,20], [12,24], [14,28]];
                     return pool[Math.floor(Math.random() * pool.length)];
                 } else {
-                    let pool = [[9,15], [12,18], [20,36], [16,24], [18,24], [24,36], [15,25], [18,30], [28,42], [30,45], [24,40], [10,25]];
+                    let pool = [[4,6], [6,8], [6,9], [6,10], [8,10], [8,12], [9,12], [10,12], [10,15], [12,15], [12,16], [12,18], [15,18], [15,20], [16,20], [18,24]];
                     return pool[Math.floor(Math.random() * pool.length)];
                 }
             } else {
                 if (topic === 'coprime') {
-                    let pool = [[2,3,5], [3,4,5], [2,5,7], [3,5,7], [4,5,7], [3,7,10], [5,7,9]];
+                    let pool = [[2,3,5], [2,3,7], [2,5,7], [3,4,5], [3,5,7]];
                     return pool[Math.floor(Math.random() * pool.length)];
                 } else if (topic === 'multiple') {
                     let pool = [[2,4,8], [3,6,12], [4,8,16], [5,10,20], [6,12,24], [7,14,28], [8,16,32]];
                     return pool[Math.floor(Math.random() * pool.length)];
                 } else {
-                    let pool = [[4,6,8], [6,8,12], [6,9,12], [8,12,16], [10,12,15], [12,18,24], [15,20,30], [12,15,20]];
+                    let pool = [[2,3,4], [2,4,6], [3,4,6], [4,6,8], [6,8,12], [6,9,12], [8,12,16], [10,12,15], [12,15,20]];
                     return pool[Math.floor(Math.random() * pool.length)];
                 }
             }
@@ -1419,6 +1426,7 @@
             }
         }
 
+        /* 渲染列舉倍數法 UI (改為最大 8 個格子) */
         function renderListingMethodUI(q) {
             const isZh = currentLang === 'zh';
             let sortedNums = [...q.numbers].sort((a,b) => b - a);
@@ -1439,7 +1447,8 @@
                 row.className = 'listing-row';
                 
                 let boxesHtml = '';
-                for (let i = 0; i < 5; i++) {
+                let boxCount = q.listingMap[n].length;
+                for (let i = 0; i < boxCount; i++) {
                     boxesHtml += `<input type="number" class="grid-input-box" data-num="${n}" data-idx="${i}" min="1" step="1" autocomplete="off" onkeydown="preventInvalidInput(event)" oninput="cleanPositiveInt(this)" onkeypress="handleKeyPress(event)">`;
                 }
 
@@ -1477,6 +1486,7 @@
             }, 50);
         }
 
+        /* 渲染較大數倍數法 (心算) UI */
         function renderMultipleMethodUI(q) {
             const isZh = currentLang === 'zh';
             document.getElementById('multiple-question-text').innerText = i18n[currentLang].multipleQText;
@@ -1553,6 +1563,7 @@
             }
         }
 
+        /* 核對列舉倍數法答案 */
         function checkListingMethodAnswer(q) {
             const fb = document.getElementById('feedback-box');
             const isZh = currentLang === 'zh';
@@ -1691,6 +1702,7 @@
             lcmInput.disabled = true;
         }
 
+        /* 檢查短除法 */
         function checkShortDivisionAnswer(q) {
             const sdData = q.sdData;
             const fb = document.getElementById('feedback-box');
@@ -1822,6 +1834,7 @@
             }
         }
 
+        /* 檢查較大數倍數法 (心算) */
         function checkMultipleMethodAnswer(q) {
             const input = document.getElementById('user-answer');
             const val = parseInt(input.value.trim());
