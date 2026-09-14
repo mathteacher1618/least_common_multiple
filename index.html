@@ -39,6 +39,8 @@
         .dropdown {
             position: relative;
             display: inline-block;
+            padding-bottom: 8px; /* 增加緩衝區域，防止滑鼠游標移出時選單消失 */
+            margin-bottom: -8px;
         }
 
         .lang-btn {
@@ -64,13 +66,13 @@
             position: absolute;
             right: 0;
             top: 100%;
-            margin-top: 6px;
+            margin-top: 0px; /* 移除間隙，避免 Hover 斷開 */
             background-color: #ffffff;
             min-width: 100px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             border-radius: 6px;
             overflow: hidden;
-            z-index: 10;
+            z-index: 1000; /* 提升層級，避免被其他元件遮擋 */
         }
 
         .dropdown-content a {
@@ -414,7 +416,6 @@
             font-weight: 600;
         }
 
-        /* --- 列舉倍數法 UI 樣式 --- */
         .listing-wrapper {
             display: flex;
             flex-direction: column;
@@ -492,7 +493,6 @@
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
         }
 
-        /* --- 藍色短除法直式樣式 --- */
         .sd-wrapper {
             display: flex;
             flex-direction: column;
@@ -569,7 +569,6 @@
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
         }
 
-        /* 通用答對綠色標記樣式 */
         .is-correct {
             border: 2px solid #16a34a !important;
             color: #16a34a !important;
@@ -1420,7 +1419,6 @@
             }
         }
 
-        /* 渲染列舉倍數法 UI */
         function renderListingMethodUI(q) {
             const isZh = currentLang === 'zh';
             let sortedNums = [...q.numbers].sort((a,b) => b - a);
@@ -1479,7 +1477,6 @@
             }, 50);
         }
 
-        /* 渲染較大數倍數法 (心算) UI */
         function renderMultipleMethodUI(q) {
             const isZh = currentLang === 'zh';
             document.getElementById('multiple-question-text').innerText = i18n[currentLang].multipleQText;
@@ -1556,7 +1553,6 @@
             }
         }
 
-        /* 核對列舉倍數法答案 */
         function checkListingMethodAnswer(q) {
             const fb = document.getElementById('feedback-box');
             const isZh = currentLang === 'zh';
@@ -1695,7 +1691,6 @@
             lcmInput.disabled = true;
         }
 
-        /* 檢查短除法 */
         function checkShortDivisionAnswer(q) {
             const sdData = q.sdData;
             const fb = document.getElementById('feedback-box');
@@ -1827,7 +1822,6 @@
             }
         }
 
-        /* 檢查較大數倍數法 (心算) */
         function checkMultipleMethodAnswer(q) {
             const input = document.getElementById('user-answer');
             const val = parseInt(input.value.trim());
